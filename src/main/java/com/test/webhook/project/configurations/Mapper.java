@@ -2,7 +2,6 @@ package com.test.webhook.project.configurations;
 
 import java.util.UUID;
 
-import org.hibernate.annotations.Comment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
