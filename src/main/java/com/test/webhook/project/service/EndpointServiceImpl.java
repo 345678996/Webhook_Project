@@ -128,8 +128,13 @@ public class EndpointServiceImpl implements EndpointService{
     }
 
     @Override
-    public EndpointDTO deleteEndpoint(Long endpointId, HttpServletRequest request) {
-        EndpointEntity existingEndpoint = endpointRespository.findById(endpointId)
+    public EndpointDTO deleteEndpoint(Long endpointId, HttpServletRequest request, Long userId) {
+        UserEntity user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ResourceNotFoundException("User", "userId", userId));
+
+        EndpointEntity existingEndpoint = user.getEndpoints().stream()
+                        .filter(e -> e.getEndpointId().equals(endpointId))
+                        .findFirst()
                         .orElseThrow(() -> new ResourceNotFoundException("Endpoint", "endpointId", endpointId));
 
         endpointRespository.delete(existingEndpoint);

@@ -75,8 +75,11 @@ public class EndpointController {
     }
 
     @DeleteMapping("/api/endpoints/{endpointId}")
-    public ResponseEntity<EndpointDTO> deleteEndpoint(@PathVariable Long endpointId, HttpServletRequest request) {
-        EndpointDTO endpointDTO = endpointService.deleteEndpoint(endpointId, request);
+    public ResponseEntity<EndpointDTO> deleteEndpoint(@PathVariable Long endpointId,
+                                                      HttpServletRequest request,
+                                                      @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getId();
+        EndpointDTO endpointDTO = endpointService.deleteEndpoint(endpointId, request, userId);
         return new ResponseEntity<>(endpointDTO, HttpStatus.OK);
     }
 
