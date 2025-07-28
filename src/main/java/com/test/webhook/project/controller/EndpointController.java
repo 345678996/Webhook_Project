@@ -57,8 +57,9 @@ public class EndpointController {
     }
 
     @GetMapping("/api/endpoints/{endpointId}")
-    public ResponseEntity<EndpointDTO> searchEndpointById(@PathVariable Long endpointId, HttpServletRequest request) {
-        EndpointDTO endpointDTO = endpointService.searchEndpointById(endpointId,request);
+    public ResponseEntity<EndpointDTO> searchEndpointById(@PathVariable Long endpointId, HttpServletRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getId();
+        EndpointDTO endpointDTO = endpointService.searchEndpointById(endpointId, request, userId);
         return new ResponseEntity<>(endpointDTO, HttpStatus.OK);
     }
 

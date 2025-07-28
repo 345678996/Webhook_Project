@@ -11,7 +11,7 @@ public interface EndpointService {
 
     EndpointResponse getAllEndpoints(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, HttpServletRequest request, Long userId);
 
-    EndpointDTO searchEndpointById(Long endpointId, HttpServletRequest request);
+    EndpointDTO searchEndpointById(Long endpointId, HttpServletRequest request, Long userId);
 
     EndpointDTO searchEndpointByName(String endpointName, HttpServletRequest request);
 
