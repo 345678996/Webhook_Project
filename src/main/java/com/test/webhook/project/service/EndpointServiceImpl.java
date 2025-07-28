@@ -109,10 +109,15 @@ public class EndpointServiceImpl implements EndpointService{
     }
 
     @Override
-    public EndpointDTO searchEndpointByName(String endpointName, HttpServletRequest request) {
-        EndpointEntity endpointFromDB = endpointRespository.findByEndpointName(endpointName)
-                    .orElseThrow(() -> new ResourceNotFoundException("Endpoint","endpointName", endpointName));
-        
+    public EndpointDTO searchEndpointByName(String endpointName, HttpServletRequest request, Long userId) {
+        UserEntity user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ResourceNotFoundException("User", "userId", userId));
+
+        EndpointEntity endpointFromDB = user.getEndpoints().stream()
+                        .filter(e -> e.getEndpointName().equals(endpointName))
+                        .findFirst()
+                        .orElseThrow(() -> new ResourceNotFoundException("Endpoint", "endpointName", endpointName));
+
         EndpointDTO endpointDTOFromDB = mapper.endpointEntityMapper(endpointFromDB);
         String baseURL = request.getScheme() + "://" + request.getServerName()
                + ":" + request.getServerPort();

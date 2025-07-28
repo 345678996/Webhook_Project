@@ -13,7 +13,7 @@ public interface EndpointService {
 
     EndpointDTO searchEndpointById(Long endpointId, HttpServletRequest request, Long userId);
 
-    EndpointDTO searchEndpointByName(String endpointName, HttpServletRequest request);
+    EndpointDTO searchEndpointByName(String endpointName, HttpServletRequest request, Long userId);
 
     EndpointDTO deleteEndpoint(Long endpointId, HttpServletRequest request);
 
