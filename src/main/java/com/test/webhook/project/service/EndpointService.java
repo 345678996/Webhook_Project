@@ -7,9 +7,9 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public interface EndpointService {
     
-    EndpointDTO createEndpoint(EndpointDTO endpointDTO, HttpServletRequest request);
+    EndpointDTO createEndpoint(EndpointDTO endpointDTO, HttpServletRequest request, Long userId);
 
-    EndpointResponse getAllEndpoints(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, HttpServletRequest request);
+    EndpointResponse getAllEndpoints(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, HttpServletRequest request, Long userId);
 
     EndpointDTO searchEndpointById(Long endpointId, HttpServletRequest request);
 

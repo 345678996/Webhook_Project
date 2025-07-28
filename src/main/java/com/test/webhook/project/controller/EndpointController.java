@@ -3,6 +3,7 @@ package com.test.webhook.project.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.test.webhook.project.configurations.AppConstants;
 import com.test.webhook.project.payloads.EndpointDTO;
 import com.test.webhook.project.payloads.EndpointResponse;
+import com.test.webhook.project.service.CustomUserDetails;
 import com.test.webhook.project.service.EndpointService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,8 +28,10 @@ public class EndpointController {
 
     @PostMapping("/api/endpoints")
     public ResponseEntity<EndpointDTO> createEndpoint(@RequestBody EndpointDTO endpointDTO,
+                                                      @AuthenticationPrincipal CustomUserDetails userDetails,
                                                        HttpServletRequest request) {
-        EndpointDTO savedEndpointDTO = endpointService.createEndpoint(endpointDTO, request);
+        Long userId = userDetails.getId();
+        EndpointDTO savedEndpointDTO = endpointService.createEndpoint(endpointDTO, request, userId);
         return new ResponseEntity<>(savedEndpointDTO, HttpStatus.CREATED);
     }
 
@@ -37,6 +41,7 @@ public class EndpointController {
         @RequestParam(name = "pageSize", required = false) String pageSize,
         @RequestParam(name = "sortBy", required = false) String sortBy,
         @RequestParam(name = "sortOrder", required = false) String sortOrder,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         HttpServletRequest request
     ) {
         // Fallbacks with parsing
@@ -45,7 +50,8 @@ public class EndpointController {
         String sortField = (sortBy == null || sortBy.isBlank()) ? AppConstants.SORT_ENDPOINT_BY : sortBy;
         String direction = (sortOrder == null || sortOrder.isBlank()) ? AppConstants.SORT_DIR : sortOrder;
 
-        EndpointResponse endpointResponse = endpointService.getAllEndpoints(page, size, sortField, direction, request);
+        Long userId = userDetails.getId();
+        EndpointResponse endpointResponse = endpointService.getAllEndpoints(page, size, sortField, direction, request, userId);
 
         return new ResponseEntity<>(endpointResponse, HttpStatus.OK);
     }

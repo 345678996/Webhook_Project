@@ -14,9 +14,11 @@ import com.test.webhook.project.configurations.Mapper;
 import com.test.webhook.project.exceptions.APIException;
 import com.test.webhook.project.exceptions.ResourceNotFoundException;
 import com.test.webhook.project.model.EndpointEntity;
+import com.test.webhook.project.model.UserEntity;
 import com.test.webhook.project.payloads.EndpointDTO;
 import com.test.webhook.project.payloads.EndpointResponse;
 import com.test.webhook.project.repositories.EndpointRespository;
+import com.test.webhook.project.repositories.UserRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -27,15 +29,22 @@ public class EndpointServiceImpl implements EndpointService{
     private EndpointRespository endpointRespository;
     @Autowired
     private Mapper mapper;
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
-    public EndpointDTO createEndpoint(EndpointDTO endpointDTO, HttpServletRequest request) {
+    public EndpointDTO createEndpoint(EndpointDTO endpointDTO, HttpServletRequest request, Long userId) {
         EndpointEntity endpoint = mapper.endpointDataMapper(endpointDTO);
-
+        // Enpoint exist or not check
         Optional<EndpointEntity> endpointFromDB = endpointRespository.findByEndpointName(endpoint.getEndpointName());
         if(endpointFromDB.isPresent()) {
             throw new APIException("Endpoint with name "+endpointDTO.getEndpointName()+" already exist");
         }
+        // Get user
+        UserEntity user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ResourceNotFoundException("User", "userId", userId));
+        // Associate user with endpoint
+        endpoint.setUser(user);
         EndpointEntity savedEndpoint = endpointRespository.save(endpoint);
 
         EndpointDTO endpointDTOwithCustomUrl = mapper.endpointEntityMapper(savedEndpoint);
@@ -48,14 +57,14 @@ public class EndpointServiceImpl implements EndpointService{
     }
 
     @Override
-    public EndpointResponse getAllEndpoints(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, HttpServletRequest request) {
+    public EndpointResponse getAllEndpoints(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, HttpServletRequest request, Long userId) {
         // ---Sorting---
         Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending(); 
         // ----Pagenation formula----
         Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
-        Page<EndpointEntity> endpointPage = endpointRespository.findAll(pageDetails);
+        Page<EndpointEntity> endpointPage = endpointRespository.findByUserId(userId, pageDetails);
 
         List<EndpointEntity> endpoints = endpointPage.getContent();
         if(endpoints.isEmpty()) {

@@ -15,7 +15,9 @@ public class SecurityConfig {
 		http.authorizeHttpRequests(
 				auth -> auth
 				.requestMatchers("/api/users/**").permitAll()
-				.anyRequest().authenticated()).httpBasic()
+				.anyRequest().authenticated()
+                )
+                .httpBasic()
 				.and()
 				.csrf().disable();
         
@@ -25,7 +27,5 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-    
-    
+    }    
 }
