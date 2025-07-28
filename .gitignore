@@ -1,0 +1,39 @@
+# ========== JAVA BUILD ==========
+/target/
+*.class
+*.jar
+*.war
+*.ear
+
+# ========== MAVEN ==========
+/pom.xml.tag
+/pom.xml.releaseBackup
+/pom.xml.versionsBackup
+/logs/
+release.properties
+
+# ========== IDE FILES ==========
+# VS Code
+.vscode/
+
+# ========== OS-SPECIFIC ==========
+# macOS
+.DS_Store
+
+# ========== LOGS & TEMP FILES ==========
+*.log
+*.tmp
+*.swp
+
+# ========== ENVIRONMENT & SECRETS ==========
+.env
+.env.local
+application-dev.properties
+application-prod.properties
+application-test.properties
+
+# ========== TEST OUTPUT ==========
+/test-output/
+
+# ========== GIT ==========
+!.gitignore
