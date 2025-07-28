@@ -1,6 +1,5 @@
 package com.test.webhook.project.payloads;
 
-import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +14,6 @@ public class EndpointDTO {
     private Long endpointId;
     private String endpointName;
     private String description;
-    private LocalDateTime createdAt;
 
     private String customEndpointUrl;
 

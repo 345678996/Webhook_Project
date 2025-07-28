@@ -92,7 +92,8 @@ public class EndpointServiceImpl implements EndpointService{
     @Override
     public EndpointDTO searchEndpointById(Long endpointId, HttpServletRequest request, Long userId) {
         UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "userId", userId));
+                    .orElseThrow(() -> new ResourceNotFoundException("User", "userId", userId));
+        
         EndpointEntity endpointFromDB = user.getEndpoints().stream()
                         .filter(e -> e.getEndpointId().equals(endpointId))
                         .findFirst()
