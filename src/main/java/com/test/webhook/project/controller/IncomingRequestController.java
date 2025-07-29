@@ -116,9 +116,11 @@ public class IncomingRequestController {
     public ResponseEntity<IncomingRequestDTO> deleteRequestForEndpoint(
                                 @PathVariable String endpointName,
                                 HttpServletRequest request,
-                                @PathVariable Long requestId
+                                @PathVariable Long requestId,
+                                @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        IncomingRequestDTO responseDTO = incomingRequestService.deleteRequestForEndpoint(endpointName, requestId,request);
+        Long userId = userDetails.getId();
+        IncomingRequestDTO responseDTO = incomingRequestService.deleteRequestForEndpoint(endpointName, requestId,request, userId);
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 }

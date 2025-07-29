@@ -217,12 +217,25 @@ public class IncomingRequestServiceImpl implements IncomingRequestService{
 
     @Override
     public IncomingRequestDTO deleteRequestForEndpoint(String endpointName, Long requestId,
-            HttpServletRequest request) {
-        EndpointEntity endpoint = endpointRespository.findByEndpointName(endpointName)
-                    .orElseThrow(() -> new ResourceNotFoundException("Endpoint", "endpointName", endpointName));
+            HttpServletRequest request, Long userId) {
+        
+        UserEntity user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ResourceNotFoundException("User", "userId", userId));
+        
+        EndpointEntity endpoint =  user.getEndpoints().stream()
+                        .filter(ep -> ep.getEndpointName().equals(endpointName))
+                        .findFirst()
+                        .orElseThrow(() -> new ResourceNotFoundException("Endpoint", "endpointName", endpointName));
 
-        IncomingRequestEntity incomingRequest = incomingRequestRespository.findById(requestId)
+        // EndpointEntity endpoint = endpointRespository.findByEndpointName(endpointName)
+        //             .orElseThrow(() -> new ResourceNotFoundException("Endpoint", "endpointName", endpointName));
+        IncomingRequestEntity incomingRequest = endpoint.getIncomingRequests().stream()
+                            .filter(req -> requestId.equals(req.getRequestId()))
+                            .findFirst()
                             .orElseThrow(() -> new ResourceNotFoundException("Request", "requestId", requestId));
+
+        // IncomingRequestEntity incomingRequest = incomingRequestRespository.findById(requestId)
+        //                     .orElseThrow(() -> new ResourceNotFoundException("Request", "requestId", requestId));
         incomingRequestRespository.delete(incomingRequest);
 
         IncomingRequestDTO deletedRequestDTO = modelMapper.map(incomingRequest, IncomingRequestDTO.class);
