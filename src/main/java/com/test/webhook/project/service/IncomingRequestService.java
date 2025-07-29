@@ -17,7 +17,7 @@ public interface IncomingRequestService {
 
     IncomingRequestDTO getSingleRequestForEndpoint(HttpServletRequest request, String endpointName, Long requestId, Long userId);
 
-    void deleteAllRequestForEndpoint(String endpointName, HttpServletRequest request);
+    void deleteAllRequestForEndpoint(String endpointName, HttpServletRequest request, Long userId);
 
     IncomingRequestDTO deleteRequestForEndpoint(String endpointName, Long requestId, HttpServletRequest request);
 

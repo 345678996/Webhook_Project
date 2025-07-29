@@ -195,11 +195,19 @@ public class IncomingRequestServiceImpl implements IncomingRequestService{
     }
 
     @Override
-    public void deleteAllRequestForEndpoint(String endpointName, HttpServletRequest request) {
-        EndpointEntity endpoint = endpointRespository.findByEndpointName(endpointName)
-                    .orElseThrow(() -> new ResourceNotFoundException("Endpoint", "endpointName", endpointName));
+    public void deleteAllRequestForEndpoint(String endpointName, HttpServletRequest request, Long userId) {
+        UserEntity user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ResourceNotFoundException("User", "userId", userId));
+        
+        EndpointEntity endpoint =  user.getEndpoints().stream()
+                        .filter(ep -> ep.getEndpointName().equals(endpointName))
+                        .findFirst()
+                        .orElseThrow(() -> new ResourceNotFoundException("Endpoint", "endpointName", endpointName));
 
-        List<IncomingRequestEntity> incomingRequests = incomingRequestRespository.findByEndpointOrderByReceivedAtAsc(endpoint);
+        // EndpointEntity endpoint = endpointRespository.findByEndpointName(endpointName)
+        //             .orElseThrow(() -> new ResourceNotFoundException("Endpoint", "endpointName", endpointName));
+
+        List<IncomingRequestEntity> incomingRequests = endpoint.getIncomingRequests();
         if(incomingRequests.isEmpty()) {
             throw new APIException("No request found at this endpoint");
         }

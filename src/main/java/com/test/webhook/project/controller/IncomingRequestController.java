@@ -104,9 +104,11 @@ public class IncomingRequestController {
     @DeleteMapping("/api/endpoints/{endpointName}/requests")
     public ResponseEntity<APIResponse> deleteAllRequestForEndpoint(
                             @PathVariable String endpointName,
-                            HttpServletRequest request
+                            HttpServletRequest request,
+                            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        incomingRequestService.deleteAllRequestForEndpoint(endpointName, request);
+        Long userId = userDetails.getId();
+        incomingRequestService.deleteAllRequestForEndpoint(endpointName, request, userId);
         return new ResponseEntity<>(new APIResponse("All request deleted for the endpoint: "+endpointName, true), HttpStatus.OK);
     }
 
