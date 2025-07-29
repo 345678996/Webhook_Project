@@ -88,12 +88,15 @@ public class IncomingRequestController {
     public ResponseEntity<IncomingRequestDTO> getSingleRequestForEndpoint(
                             HttpServletRequest request,
                             @PathVariable String endpointName,
-                            @PathVariable Long requestId
+                            @PathVariable Long requestId,
+                            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
+        Long userId = userDetails.getId();
         IncomingRequestDTO responseDTO = incomingRequestService.getSingleRequestForEndpoint(
                                                 request,
                                                 endpointName,
-                                                requestId
+                                                requestId,
+                                                userId
                                             );
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }

@@ -157,12 +157,25 @@ public class IncomingRequestServiceImpl implements IncomingRequestService{
     }
 
     @Override
-    public IncomingRequestDTO getSingleRequestForEndpoint(HttpServletRequest request, String endpointName, Long requestId) {
-        EndpointEntity endpoint = endpointRespository.findByEndpointName(endpointName)
-                    .orElseThrow(() -> new ResourceNotFoundException("Endpoint", "endpointName", endpointName));
+    public IncomingRequestDTO getSingleRequestForEndpoint(HttpServletRequest request, String endpointName, Long requestId, Long userId) {
+        UserEntity user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ResourceNotFoundException("User", "userId", userId));
+        
+        EndpointEntity endpoint =  user.getEndpoints().stream()
+                        .filter(ep -> ep.getEndpointName().equals(endpointName))
+                        .findFirst()
+                        .orElseThrow(() -> new ResourceNotFoundException("Endpoint", "endpointName", endpointName));
+        
+        // EndpointEntity endpoint = endpointRespository.findByEndpointName(endpointName)
+        //             .orElseThrow(() -> new ResourceNotFoundException("Endpoint", "endpointName", endpointName));
 
-        IncomingRequestEntity incomingRequest = incomingRequestRespository.findByRequestIdAndEndpoint(requestId, endpoint)
-                    .orElseThrow(() -> new ResourceNotFoundException("Request", "requestId", requestId));
+        IncomingRequestEntity incomingRequest = endpoint.getIncomingRequests().stream()
+                            .filter(req -> requestId.equals(req.getRequestId()))
+                            .findFirst()
+                            .orElseThrow(() -> new ResourceNotFoundException("Request", "requestId", requestId));
+
+        // IncomingRequestEntity incomingRequest = incomingRequestRespository.findByRequestIdAndEndpoint(requestId, endpoint)
+        //             .orElseThrow(() -> new ResourceNotFoundException("Request", "requestId", requestId));
 
         IncomingRequestDTO incomingRequestDTO = modelMapper.map(incomingRequest, IncomingRequestDTO.class);
 
