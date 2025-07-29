@@ -62,7 +62,8 @@ public class IncomingRequestController {
         @RequestParam(name = "sortBy", required = false) String sortBy,
         @RequestParam(name = "sortOrder", required = false) String sortOrder,
         HttpServletRequest request,
-        @PathVariable String endpointName
+        @PathVariable String endpointName,
+        @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         // Fallbacks with parsing
         int page = (pageNumber == null || pageNumber.isBlank()) ? Integer.parseInt(AppConstants.PAGE_NUMBER) : Integer.parseInt(pageNumber);
@@ -70,13 +71,15 @@ public class IncomingRequestController {
         String sortField = (sortBy == null || sortBy.isBlank()) ? AppConstants.SORT_ENDPOINT_BY : sortBy;
         String direction = (sortOrder == null || sortOrder.isBlank()) ? AppConstants.SORT_DIR : sortOrder;
 
+        Long userId = userDetails.getId();
         IncomingRequestResponse response = incomingRequestService.getIncomingRequestsByEndpointName(
                                                 page,
                                                 size,
                                                 sortField,
                                                 direction,
                                                 request,
-                                                endpointName
+                                                endpointName,
+                                                userId
                                             );
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

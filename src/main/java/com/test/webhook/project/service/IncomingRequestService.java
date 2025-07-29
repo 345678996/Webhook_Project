@@ -13,7 +13,7 @@ public interface IncomingRequestService {
     IncomingRequestDTO handleIncomingRequest(String customEndpoint, HttpServletRequest request, String body, Map<String, String> headers, Long userId) throws JsonProcessingException;
 
     IncomingRequestResponse getIncomingRequestsByEndpointName(Integer pageNumber, Integer pageSize, String sortBy,
-            String sortOrder, HttpServletRequest request, String endpointName);
+            String sortOrder, HttpServletRequest request, String endpointName, Long userId);
 
     IncomingRequestDTO getSingleRequestForEndpoint(HttpServletRequest request, String endpointName, Long requestId);
 

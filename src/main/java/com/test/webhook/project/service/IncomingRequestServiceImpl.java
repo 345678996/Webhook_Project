@@ -99,10 +99,18 @@ public class IncomingRequestServiceImpl implements IncomingRequestService{
 
     @Override
     public IncomingRequestResponse getIncomingRequestsByEndpointName(Integer pageNumber, Integer pageSize,
-            String sortBy, String sortOrder, HttpServletRequest request, String endpointName) {
+            String sortBy, String sortOrder, HttpServletRequest request, String endpointName, Long userId) {
         
-        EndpointEntity endpoint = endpointRespository.findByEndpointName(endpointName)
-                    .orElseThrow(() -> new ResourceNotFoundException("Endpoint", "endpointName", endpointName));
+        UserEntity user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ResourceNotFoundException("User", "userId", userId));
+        
+        EndpointEntity endpoint =  user.getEndpoints().stream()
+                        .filter(ep -> ep.getEndpointName().equals(endpointName))
+                        .findFirst()
+                        .orElseThrow(() -> new ResourceNotFoundException("Endpoint", "endpointName", endpointName));
+
+        // EndpointEntity endpoint = endpointRespository.findByEndpointName(endpointName)
+        //             .orElseThrow(() -> new ResourceNotFoundException("Endpoint", "endpointName", endpointName));
 
         // ----Sorting---
         Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")
