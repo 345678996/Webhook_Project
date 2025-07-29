@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public interface IncomingRequestService {
     
-    IncomingRequestDTO handleIncomingRequest(String customEndpoint, HttpServletRequest request, String body, Map<String, String> headers) throws JsonProcessingException;
+    IncomingRequestDTO handleIncomingRequest(String customEndpoint, HttpServletRequest request, String body, Map<String, String> headers, Long userId) throws JsonProcessingException;
 
     IncomingRequestResponse getIncomingRequestsByEndpointName(Integer pageNumber, Integer pageSize, String sortBy,
             String sortOrder, HttpServletRequest request, String endpointName);

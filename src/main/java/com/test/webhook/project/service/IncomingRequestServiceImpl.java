@@ -18,15 +18,18 @@ import com.test.webhook.project.exceptions.APIException;
 import com.test.webhook.project.exceptions.ResourceNotFoundException;
 import com.test.webhook.project.model.EndpointEntity;
 import com.test.webhook.project.model.IncomingRequestEntity;
+import com.test.webhook.project.model.UserEntity;
 import com.test.webhook.project.payloads.IncomingRequestDTO;
 import com.test.webhook.project.payloads.IncomingRequestResponse;
 import com.test.webhook.project.repositories.EndpointRespository;
 import com.test.webhook.project.repositories.IncomingRequestRespository;
-
+import com.test.webhook.project.repositories.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class IncomingRequestServiceImpl implements IncomingRequestService{
+
+    private final UserRepository userRepository;
 
     @Autowired
     private IncomingRequestRespository incomingRequestRespository;
@@ -35,14 +38,26 @@ public class IncomingRequestServiceImpl implements IncomingRequestService{
     @Autowired
     private EndpointRespository endpointRespository;
 
+    IncomingRequestServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     @Override
     public IncomingRequestDTO handleIncomingRequest(String customEndpoint,
                                                     HttpServletRequest request,
                                                     String body, 
-                                                    Map<String, String> headers) throws JsonProcessingException {
+                                                    Map<String, String> headers,
+                                                    Long userId) throws JsonProcessingException {
+        UserEntity user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ResourceNotFoundException("User", "userId", userId));
         
-        EndpointEntity endpoint = endpointRespository.findByEndpointName(customEndpoint)
-                    .orElseThrow(() -> new APIException("Please use a valid endpoint for sending the request"));
+        EndpointEntity endpoint =  user.getEndpoints().stream()
+                        .filter(ep -> ep.getEndpointName().equals(customEndpoint))
+                        .findFirst()
+                        .orElseThrow(() -> new ResourceNotFoundException("Endpoint", "endpointName", customEndpoint));
+
+        // EndpointEntity endpoint = endpointRespository.findByEndpointName(customEndpoint)
+        //             .orElseThrow(() -> new APIException("Please use a valid endpoint for sending the request"));
                     
         String method = request.getMethod();
         String headersJson = new ObjectMapper().writeValueAsString(headers);
@@ -64,6 +79,8 @@ public class IncomingRequestServiceImpl implements IncomingRequestService{
                             .receivedAt(LocalDateTime.now())
                             .endpoint(endpoint)
                             .build();
+        
+        endpoint.getIncomingRequests().add(incomingRequest);
         IncomingRequestEntity savedRequest = incomingRequestRespository.save(incomingRequest);
         
         IncomingRequestDTO incomingRequestDTO = modelMapper.map(savedRequest, IncomingRequestDTO.class);

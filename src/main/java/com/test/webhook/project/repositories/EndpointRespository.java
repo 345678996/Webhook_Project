@@ -16,4 +16,6 @@ public interface EndpointRespository extends JpaRepository<EndpointEntity, Long>
 
     Page<EndpointEntity> findByUserId(Long userId, Pageable pageDetails);
 
+    Optional<EndpointEntity> findByUserId(Long userId);
+
 }
