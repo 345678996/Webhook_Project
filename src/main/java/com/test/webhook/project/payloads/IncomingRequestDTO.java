@@ -15,7 +15,7 @@ public class IncomingRequestDTO {
     private Long id;
     private String method;
     private Map<String, String> headers;       
-    private String body;         
+    private String body;    
     private String queryParams;  
     private String path; 
     private String ipAddress;
